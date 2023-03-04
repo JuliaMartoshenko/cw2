@@ -45,20 +45,20 @@
         date:'12.02.22 12:18',
         text:'Это будет первый комментарий на этой странице',
         counter:3,
-        like:false,
+        like:'like-button',
       },
       {
         name:'Варвара Н.',
         date:'13.02.22 19:22',
         text:'Мне нравится как оформлена эта страница! ❤',
         counter:75,
-        like:true,
+        like:'like-button -active-like',
       },
     ];
 
     //рендер данных
     const renderComments = () => {
-      const studentsHtml=comments.map((comment) => {
+      const studentsHtml=comments.map((comment, index) => {
         return `<li class="comment">
           <div class="comment-header">
             <div>${comment.name}</div>
@@ -72,7 +72,7 @@
           <div class="comment-footer">
             <div class="likes">
               <span class="likes-counter">${comment.counter}</span>лайка
-              <button class="like-button"></button>
+              <button class="${comment.like}" data-index="${index}"></button>
             </div>
           </div>
         </li>`;
@@ -85,7 +85,28 @@
     const listElement = document.getElementById('list');
     const nameInputElement = document.getElementById('name-input');
     const commentInputElement = document.getElementById('comment-input');
-    renderComments();
+
+    //Обработчик события "клик по сердечку"
+    const initLikeButtonListener = () => {
+      likeButtonElements = document.querySelectorAll('.like-button');
+      for (const likeButtonElement of likeButtonElements) {
+        likeButtonElement.addEventListener('click', () =>{
+          const index = likeButtonElement.dataset.index;
+          let currentLike = comments[index].like;
+          if (currentLike === 'like-button -active-like') {
+            comments[index].like = 'like-button';
+            console.log('unlike')
+            console.log(comments[index]);
+            renderComments();
+          } else {
+            comments[index].like = 'like-button -active-like';
+            console.log('like');
+            console.log(comments[index]);
+            renderComments();
+          }
+        })    
+      }
+    }
 
     //Обработчик события "клик по кнопке"
     buttonElement.addEventListener('click', () =>{
@@ -126,13 +147,14 @@
         date:nowDate,
         text:commentInputElement.value,
         counter:0,
-        like:false,
+        like:'like-button',
       });
       renderComments();
       nameInputElement.value = '';
       commentInputElement.value = '';
     });
     
-    console.log("It works!");
+    initLikeButtonListener();
+    renderComments();
   </script>
 </html>
