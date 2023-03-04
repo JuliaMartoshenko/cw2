@@ -8,40 +8,7 @@
   <body>
     <div class="container">
       <ul class="comments" id="list">
-        <li class="comment">
-          <div class="comment-header">
-            <div>Глеб Фокин</div>
-            <div>12.02.22 12:18</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Это будет первый комментарий на этой странице
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">3</span>лайка
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-        <li class="comment">
-          <div class="comment-header">
-            <div>Варвара Н.</div>
-            <div>13.02.22 19:22</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Мне нравится как оформлена эта страница! ❤
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">75</span>лайка
-              <button class="like-button -active-like"></button>
-            </div>
-          </div>
-        </li>
+        <!-- данные рендерятся в js -->
       </ul>
       <div class="add-form">
         <input
@@ -72,28 +39,53 @@
 
   <script>
     //массив данных
-    let data = [
+    const comments = [
       {
         name:'Глеб Фокин',
         date:'12.02.22 12:18',
-        comment:'Это будет первый комментарий на этой странице',
+        text:'Это будет первый комментарий на этой странице',
         counter:3,
         like:false,
       },
       {
         name:'Варвара Н.',
         date:'13.02.22 19:22',
-        comment:'Мне нравится как оформлена эта страница! ❤',
+        text:'Мне нравится как оформлена эта страница! ❤',
         counter:75,
         like:true,
       },
     ];
+
+    //рендер данных
+    const renderComments = () => {
+      const studentsHtml=comments.map((comment) => {
+        return `<li class="comment">
+          <div class="comment-header">
+            <div>${comment.name}</div>
+            <div>${comment.date}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${comment.text}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.counter}</span>лайка
+              <button class="like-button"></button>
+            </div>
+          </div>
+        </li>`;
+      }).join('');
+      listElement.innerHTML = studentsHtml;
+    }
 
     //создание элементов дома
     const buttonElement = document.getElementById('button');
     const listElement = document.getElementById('list');
     const nameInputElement = document.getElementById('name-input');
     const commentInputElement = document.getElementById('comment-input');
+    renderComments();
 
     //Обработчик события "клик по кнопке"
     buttonElement.addEventListener('click', () =>{
@@ -107,7 +99,6 @@
         commentInputElement.classList.add('error');
         return;
       }
-      //сбор даты в верном формате
 
       //функция приведения однозначного числа к формату двухзначного числа
       const dateFormat = (number) => {
@@ -119,6 +110,7 @@
       }
       }
 
+      //сбор даты в верном формате
       let nowDate = new Date();
       let day = dateFormat(nowDate.getDay());
       let month = dateFormat(nowDate.getMonth());
@@ -129,26 +121,18 @@
       nowDate = `${day}.${month}.${year} ${hours}:${minutes}`;
 
       //добавление нового комментария в разметку
-      const oldListElement = listElement.innerHTML;
-      listElement.innerHTML = oldListElement + 
-      `<li class="comment">
-          <div class="comment-header">
-            <div>${nameInputElement.value}</div>
-            <div>${nowDate}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${commentInputElement.value}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">0</span>лайка
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>`;
+      comments.push({
+        name:nameInputElement.value,
+        date:nowDate,
+        text:commentInputElement.value,
+        counter:0,
+        like:false,
+      });
+      renderComments();
+      nameInputElement.value = '';
+      commentInputElement.value = '';
     });
+    
     console.log("It works!");
   </script>
 </html>
