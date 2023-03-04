@@ -46,6 +46,7 @@
         text:'Это будет первый комментарий на этой странице',
         counter:3,
         like:'like-button',
+        isEdit:false,
       },
       {
         name:'Варвара Н.',
@@ -53,6 +54,7 @@
         text:'Мне нравится как оформлена эта страница! ❤',
         counter:75,
         like:'like-button -active-like',
+        isEdit:false,
       },
     ];
 
@@ -75,10 +77,12 @@
               <button class="${comment.like}" data-index="${index}"></button>
             </div>
           </div>
+          <button class="edit-form-button" data-index="${index}">Редактировать</button>
         </li>`;
       }).join('');
       listElement.innerHTML = studentsHtml;
       initLikeButtonListener();
+      initEditButtonListener();
     }
 
     //создание элементов дома
@@ -106,7 +110,7 @@
       }
     }
 
-    //Обработчик события "клик по кнопке"
+    //Обработчик события "клик по кнопке написать"
     buttonElement.addEventListener('click', () =>{
 
       //проверка на пустые поля формы
@@ -146,13 +150,22 @@
         text:commentInputElement.value,
         counter:0,
         like:'like-button',
+        isEdit:false,
       });
       renderComments();
       nameInputElement.value = '';
       commentInputElement.value = '';
     });
     
-
+    //Обработчик события "клик по кнопке редактировать"
+    const initEditButtonListener = () => {
+      editButtonElements = document.querySelectorAll('.edit-form-button');
+      for (editButtonElement of editButtonElements) {
+        editButtonElement.addEventListener('click', () =>{
+          console.log('запрос на редактирование');
+        })
+      }
+    }
 
     renderComments();
     
