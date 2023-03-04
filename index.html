@@ -78,6 +78,7 @@
         </li>`;
       }).join('');
       listElement.innerHTML = studentsHtml;
+      initLikeButtonListener();
     }
 
     //создание элементов дома
@@ -94,17 +95,19 @@
           const index = likeButtonElement.dataset.index;
           let currentLike = comments[index].like;
           if (currentLike === 'like-button -active-like') {
-            comments[index].like = 'like-button';
+            
             console.log('unlike')
-            console.log(comments[index]);
-            renderComments();
+            console.log(comments[index].like);
+            comments[index].like = 'like-button';
+            console.log(comments[index].like);
           } else {
-            comments[index].like = 'like-button -active-like';
             console.log('like');
-            console.log(comments[index]);
-            renderComments();
+            console.log(comments[index].like);
+            comments[index].like = 'like-button -active-like';
+            console.log(comments[index].like);
           }
-        })    
+          renderComments();
+        })  
       }
     }
 
@@ -154,7 +157,11 @@
       commentInputElement.value = '';
     });
     
-    initLikeButtonListener();
+
+
     renderComments();
+    initLikeButtonListener();
+    
+
   </script>
 </html>
