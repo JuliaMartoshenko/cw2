@@ -95,16 +95,11 @@
           const index = likeButtonElement.dataset.index;
           let currentLike = comments[index].like;
           if (currentLike === 'like-button -active-like') {
-            
-            console.log('unlike')
-            console.log(comments[index].like);
             comments[index].like = 'like-button';
-            console.log(comments[index].like);
+            comments[index].counter--;
           } else {
-            console.log('like');
-            console.log(comments[index].like);
             comments[index].like = 'like-button -active-like';
-            console.log(comments[index].like);
+            comments[index].counter++;
           }
           renderComments();
         })  
