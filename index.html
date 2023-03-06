@@ -58,9 +58,16 @@
       },
     ];
 
+
     //рендер данных
     const renderComments = () => {
       const studentsHtml=comments.map((comment, index) => {
+        let button;
+        if (comments[index].isEdit === true) {
+          button = "Сохранить";
+        } else {
+          button = "Редактировать";
+        }
         return `<li class="comment">
           <div class="comment-header">
             <div>${comment.name}</div>
@@ -77,7 +84,7 @@
               <button class="${comment.like}" data-index="${index}"></button>
             </div>
           </div>
-          <button class="edit-form-button" data-index="${index}">Редактировать</button>
+          <button class="edit-form-button" data-index="${index}">${button}</button>
         </li>`;
       }).join('');
       listElement.innerHTML = studentsHtml;
@@ -135,8 +142,8 @@
 
       //сбор даты в верном формате
       let nowDate = new Date();
-      let day = dateFormat(nowDate.getDay());
-      let month = dateFormat(nowDate.getMonth());
+      let day = dateFormat(nowDate.getDate());
+      let month = dateFormat(nowDate.getMonth()+1);
       let year = nowDate.getFullYear()-2000;
       let hours = dateFormat(nowDate.getHours());
       let minutes = dateFormat(nowDate.getMinutes());
@@ -161,12 +168,14 @@
     const initEditButtonListener = () => {
       editButtonElements = document.querySelectorAll('.edit-form-button');
       for (editButtonElement of editButtonElements) {
-        editButtonElement.addEventListener('click', () =>{
-          console.log('запрос на редактирование');
+        const index = editButtonElement.dataset.index;
+        editButtonElement.addEventListener('click', () => {
+          comments[index].isEdit = !comments[index].isEdit;
+          console.log(`запрос на редактирование элемента ${index}`);
+          renderComments();
         })
       }
     }
-
     renderComments();
     
 
