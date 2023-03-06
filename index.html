@@ -8,40 +8,7 @@
   <body>
     <div class="container">
       <ul class="comments" id="list">
-        <li class="comment">
-          <div class="comment-header">
-            <div>Глеб Фокин</div>
-            <div>12.02.22 12:18</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Это будет первый комментарий на этой странице
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">3</span>лайка
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-        <li class="comment">
-          <div class="comment-header">
-            <div>Варвара Н.</div>
-            <div>13.02.22 19:22</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Мне нравится как оформлена эта страница! ❤
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">75</span>лайков
-              <button class="like-button -active-like"></button>
-            </div>
-          </div>
-        </li>
+        <!-- данные рендерятся в js -->
       </ul>
       <div class="add-form">
         <input
@@ -71,13 +38,86 @@
 </style>
 
   <script>
+    //массив данных
+    const comments = [
+      {
+        name:'Глеб Фокин',
+        date:'12.02.22 12:18',
+        text:'Это будет первый комментарий на этой странице',
+        counter:3,
+        like:'like-button',
+        isEdit:false,
+      },
+      {
+        name:'Варвара Н.',
+        date:'13.02.22 19:22',
+        text:'Мне нравится как оформлена эта страница! ❤',
+        counter:75,
+        like:'like-button -active-like',
+        isEdit:false,
+      },
+    ];
+
+
+    //рендер данных
+    const renderComments = () => {
+      const studentsHtml=comments.map((comment, index) => {
+        let button;
+        if (comments[index].isEdit === true) {
+          button = "Сохранить";
+        } else {
+          button = "Редактировать";
+        }
+        return `<li class="comment">
+          <div class="comment-header">
+            <div>${comment.name}</div>
+            <div>${comment.date}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${comment.text}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.counter}</span>лайка
+              <button class="${comment.like}" data-index="${index}"></button>
+            </div>
+          </div>
+          <button class="edit-form-button" data-index="${index}">${button}</button>
+        </li>`;
+      }).join('');
+      listElement.innerHTML = studentsHtml;
+      initLikeButtonListener();
+      initEditButtonListener();
+    }
+
     //создание элементов дома
     const buttonElement = document.getElementById('button');
     const listElement = document.getElementById('list');
     const nameInputElement = document.getElementById('name-input');
     const commentInputElement = document.getElementById('comment-input');
 
-    //Обработчик события "клик по кнопке"
+    //Обработчик события "клик по сердечку"
+    const initLikeButtonListener = () => {
+      likeButtonElements = document.querySelectorAll('.like-button');
+      for (const likeButtonElement of likeButtonElements) {
+        likeButtonElement.addEventListener('click', () =>{
+          const index = likeButtonElement.dataset.index;
+          let currentLike = comments[index].like;
+          if (currentLike === 'like-button -active-like') {
+            comments[index].like = 'like-button';
+            comments[index].counter--;
+          } else {
+            comments[index].like = 'like-button -active-like';
+            comments[index].counter++;
+          }
+          renderComments();
+        })  
+      }
+    }
+
+    //Обработчик события "клик по кнопке написать"
     buttonElement.addEventListener('click', () =>{
 
       //проверка на пустые поля формы
@@ -89,7 +129,6 @@
         commentInputElement.classList.add('error');
         return;
       }
-      //сбор даты в верном формате
 
       //функция приведения однозначного числа к формату двухзначного числа
       const dateFormat = (number) => {
@@ -101,9 +140,10 @@
       }
       }
 
+      //сбор даты в верном формате
       let nowDate = new Date();
-      let day = dateFormat(nowDate.getDay());
-      let month = dateFormat(nowDate.getMonth());
+      let day = dateFormat(nowDate.getDate());
+      let month = dateFormat(nowDate.getMonth()+1);
       let year = nowDate.getFullYear()-2000;
       let hours = dateFormat(nowDate.getHours());
       let minutes = dateFormat(nowDate.getMinutes());
@@ -111,26 +151,33 @@
       nowDate = `${day}.${month}.${year} ${hours}:${minutes}`;
 
       //добавление нового комментария в разметку
-      const oldListElement = listElement.innerHTML;
-      listElement.innerHTML = oldListElement + 
-      `<li class="comment">
-          <div class="comment-header">
-            <div>${nameInputElement.value}</div>
-            <div>${nowDate}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${commentInputElement.value}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">0</span>лайков
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>`;
+      comments.push({
+        name:nameInputElement.value,
+        date:nowDate,
+        text:commentInputElement.value,
+        counter:0,
+        like:'like-button',
+        isEdit:false,
+      });
+      renderComments();
+      nameInputElement.value = '';
+      commentInputElement.value = '';
     });
-    console.log("It works!");
+    
+    //Обработчик события "клик по кнопке редактировать"
+    const initEditButtonListener = () => {
+      editButtonElements = document.querySelectorAll('.edit-form-button');
+      for (editButtonElement of editButtonElements) {
+        const index = editButtonElement.dataset.index;
+        editButtonElement.addEventListener('click', () => {
+          comments[index].isEdit = !comments[index].isEdit;
+          console.log(`запрос на редактирование элемента ${index}`);
+          renderComments();
+        })
+      }
+    }
+    renderComments();
+    
+
   </script>
 </html>
