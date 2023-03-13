@@ -45,20 +45,21 @@
         date:'12.02.22 12:18',
         text:'Это будет первый комментарий на этой странице',
         counter:3,
-        like:'like-button',
+        like:false,
       },
       {
         name:'Варвара Н.',
         date:'13.02.22 19:22',
         text:'Мне нравится как оформлена эта страница! ❤',
         counter:75,
-        like:'like-button -active-like',
+        like:true,
       },
     ];
 
     //рендер данных
     const renderComments = () => {
       const studentsHtml=comments.map((comment, index) => {
+        currentLike = (comment.like == false) ? 'like-button' : 'like-button -active-like';
         return `<li class="comment" data-index="${index}">
           <div class="comment-header">
             <div>${comment.name}</div>
@@ -72,7 +73,7 @@
           <div class="comment-footer">
             <div class="likes">
               <span class="likes-counter">${comment.counter}</span>
-              <button class="${comment.like}" data-index="${index}"></button>
+              <button class="${currentLike}" data-index="${index}"></button>
             </div>
           </div>
         </li>`;
@@ -95,13 +96,12 @@
           event.stopPropagation();
           const index = likeButtonElement.dataset.index;
           let currentLike = comments[index].like;
-          if (currentLike === 'like-button -active-like') {
-            comments[index].like = 'like-button';
+          if (currentLike === true) {
             comments[index].counter--;
           } else {
-            comments[index].like = 'like-button -active-like';
             comments[index].counter++;
           }
+          comments[index].like = !currentLike;
           renderComments();
         })  
       }
@@ -151,7 +151,7 @@
         date:nowDate,
         text:commentInputElement.value,
         counter:0,
-        like:'like-button',
+        like:false,
       });
       renderComments();
       nameInputElement.value = '';
