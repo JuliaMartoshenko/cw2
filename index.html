@@ -45,30 +45,22 @@
         date:'12.02.22 12:18',
         text:'Это будет первый комментарий на этой странице',
         counter:3,
-        like:'like-button',
-        isEdit:false,
+        like:false,
       },
       {
         name:'Варвара Н.',
         date:'13.02.22 19:22',
         text:'Мне нравится как оформлена эта страница! ❤',
         counter:75,
-        like:'like-button -active-like',
-        isEdit:false,
+        like:true,
       },
     ];
-
 
     //рендер данных
     const renderComments = () => {
       const studentsHtml=comments.map((comment, index) => {
-        let button;
-        if (comments[index].isEdit === true) {
-          button = "Сохранить";
-        } else {
-          button = "Редактировать";
-        }
-        return `<li class="comment">
+        currentLike = (comment.like == false) ? 'like-button' : 'like-button -active-like';
+        return `<li class="comment" data-index="${index}">
           <div class="comment-header">
             <div>${comment.name}</div>
             <div>${comment.date}</div>
@@ -80,16 +72,14 @@
           </div>
           <div class="comment-footer">
             <div class="likes">
-              <span class="likes-counter">${comment.counter}</span>лайка
-              <button class="${comment.like}" data-index="${index}"></button>
+              <span class="likes-counter">${comment.counter}</span>
+              <button class="${currentLike}" data-index="${index}"></button>
             </div>
           </div>
-          <button class="edit-form-button" data-index="${index}">${button}</button>
         </li>`;
       }).join('');
       listElement.innerHTML = studentsHtml;
       initLikeButtonListener();
-      initEditButtonListener();
     }
 
     //создание элементов дома
@@ -102,16 +92,16 @@
     const initLikeButtonListener = () => {
       likeButtonElements = document.querySelectorAll('.like-button');
       for (const likeButtonElement of likeButtonElements) {
-        likeButtonElement.addEventListener('click', () =>{
+        likeButtonElement.addEventListener('click', (event) =>{
+          event.stopPropagation();
           const index = likeButtonElement.dataset.index;
           let currentLike = comments[index].like;
-          if (currentLike === 'like-button -active-like') {
-            comments[index].like = 'like-button';
+          if (currentLike === true) {
             comments[index].counter--;
           } else {
-            comments[index].like = 'like-button -active-like';
             comments[index].counter++;
           }
+          comments[index].like = !currentLike;
           renderComments();
         })  
       }
@@ -142,40 +132,32 @@
 
       //сбор даты в верном формате
       let nowDate = new Date();
+
       let day = dateFormat(nowDate.getDate());
       let month = dateFormat(nowDate.getMonth()+1);
       let year = nowDate.getFullYear()-2000;
       let hours = dateFormat(nowDate.getHours());
       let minutes = dateFormat(nowDate.getMinutes());
-
       nowDate = `${day}.${month}.${year} ${hours}:${minutes}`;
 
       //добавление нового комментария в разметку
+      nameInputElement.value = nameInputElement.value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
       comments.push({
         name:nameInputElement.value,
         date:nowDate,
         text:commentInputElement.value,
         counter:0,
-        like:'like-button',
-        isEdit:false,
+        like:false,
       });
       renderComments();
       nameInputElement.value = '';
       commentInputElement.value = '';
     });
-    
-    //Обработчик события "клик по кнопке редактировать"
-    const initEditButtonListener = () => {
-      editButtonElements = document.querySelectorAll('.edit-form-button');
-      for (editButtonElement of editButtonElements) {
-        const index = editButtonElement.dataset.index;
-        editButtonElement.addEventListener('click', () => {
-          comments[index].isEdit = !comments[index].isEdit;
-          console.log(`запрос на редактирование элемента ${index}`);
-          renderComments();
-        })
-      }
-    }
+
     renderComments();
     
 
