@@ -46,7 +46,6 @@
         text:'Это будет первый комментарий на этой странице',
         counter:3,
         like:'like-button',
-        isEdit:false,
       },
       {
         name:'Варвара Н.',
@@ -54,19 +53,12 @@
         text:'Мне нравится как оформлена эта страница! ❤',
         counter:75,
         like:'like-button -active-like',
-        isEdit:false,
       },
     ];
 
     //рендер данных
     const renderComments = () => {
       const studentsHtml=comments.map((comment, index) => {
-        let button;
-        if (comments[index].isEdit === true) {
-          button = "Сохранить";
-        } else {
-          button = "Редактировать";
-        }
         return `<li class="comment" data-index="${index}">
           <div class="comment-header">
             <div>${comment.name}</div>
@@ -83,13 +75,10 @@
               <button class="${comment.like}" data-index="${index}"></button>
             </div>
           </div>
-          <button class="edit-form-button" data-index="${index}">${button}</button>
         </li>`;
       }).join('');
       listElement.innerHTML = studentsHtml;
       initLikeButtonListener();
-      initEditButtonListener();
-      initAnswerListener();
     }
 
     //создание элементов дома
@@ -163,44 +152,11 @@
         text:commentInputElement.value,
         counter:0,
         like:'like-button',
-        isEdit:false,
       });
       renderComments();
       nameInputElement.value = '';
       commentInputElement.value = '';
     });
-    
-    //Обработчик события "клик по кнопке редактировать"
-    const initEditButtonListener = () => {
-      editButtonElements = document.querySelectorAll('.edit-form-button');
-      for (editButtonElement of editButtonElements) {
-        const index = editButtonElement.dataset.index;
-        editButtonElement.addEventListener('click', (event) => {
-          event.stopPropagation();
-          comments[index].isEdit = !comments[index].isEdit;
-          if (comments[index].isEdit === true) {
-            console.log(`запрос на редактирование элемента ${index}`);
-          } else {
-            console.log(`запрос на сохранение элемента ${index}`);
-          }
-          renderComments();
-        })
-      }
-    }
-    
-    //обработчик события "клик по блоку кооментария"
-    const initAnswerListener = () => {
-      const answerElements = document.querySelectorAll('.comment');
-      for (const answerElement of answerElements) {
-        answerElement.addEventListener('click', () => {
-          const index = answerElement.dataset.index;
-          console.log(`${index} Нажали на ответ`);
-          commentInputElement.value = `> ${comments[index].text}
-          
-          ${comments[index].name}`;
-        })
-      }
-    }
 
     renderComments();
     
