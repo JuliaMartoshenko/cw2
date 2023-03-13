@@ -161,7 +161,26 @@
       let minutes = dateFormat(nowDate.getMinutes());
       nowDate = `${day}.${month}.${year} ${hours}:${minutes}`;
 
-      //добавление нового комментария в разметку
+      //добавление нового комментария в API
+
+      fetch('https://webdev-hw-api.vercel.app/api/v1/martoshenko-yuliya/comments',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            "id": 1,
+            "date": "2023-03-10T10:11:23.237Z",
+            "likes": 0,
+            "isLiked": false,
+            "text": comments.text,
+            "author": { "name": comments.name }
+          }),
+        }).then((response) => {
+          response.json().then((responseJson) => {
+            comments = responseJson.comments;
+            renderComments();
+          });
+        })
+
       comments.push({
         name:nameInputElement.value,
         date:nowDate,
